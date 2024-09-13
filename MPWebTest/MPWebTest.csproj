@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject />
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AzureTableStore\AzureTableStore.csproj" />
+    <ProjectReference Include="..\MPWeb.Common\MPWeb.Common.csproj" />
+    <ProjectReference Include="..\MPWeb.Logic\MPWeb.Logic.csproj" />
+  </ItemGroup>
+
+</Project>
