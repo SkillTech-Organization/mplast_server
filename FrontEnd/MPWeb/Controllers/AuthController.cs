@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using MPWeb.Code;
 using System.Configuration;
 using MPWeb.Logic.BLL;
+using MPWeb.Logic.Helpers;
+
 
 namespace MPWeb.Controllers
 {
@@ -125,6 +127,34 @@ namespace MPWeb.Controllers
                 // TODO throw error
             }
             
+            var tuToken = bllAuth.GetTemporaryUserAccessToken(decryptedTokenContent);
+
+            return Content(JsonConvert.SerializeObject(new
+            {
+                temporaryUserToken = tuToken
+            }), "application/json");
+        }
+
+        public class TempUserTokenReq
+        {
+            public string tokenContentBase64 { get; set; }
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("Auth/GenerateTempUserToken2")]
+        public ActionResult GenerateTempUserToken2([System.Web.Http.FromBody] TempUserTokenReq req)
+        {
+            var bllAuth = new BllAuth();
+            var tokenbytes64 = Convert.FromBase64String(req.tokenContentBase64);
+            var tokenContent = System.Text.Encoding.UTF8.GetString(tokenbytes64);
+            var decryptedTokenContent = bllAuth.GetTempUATokenReqContent(tokenContent);
+            
+            if (decryptedTokenContent == null)
+            {
+                // TODO throw error
+            }
+
             var tuToken = bllAuth.GetTemporaryUserAccessToken(decryptedTokenContent);
 
             return Content(JsonConvert.SerializeObject(new
