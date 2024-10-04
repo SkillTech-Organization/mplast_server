@@ -137,7 +137,7 @@ namespace MPWeb.Controllers
 
         public class TempUserTokenReq
         {
-            public string tokenContentBase64 { get; set; }
+            public string tokenContent { get; set; }
         }
 
         [AllowAnonymous]
@@ -146,9 +146,7 @@ namespace MPWeb.Controllers
         public ActionResult GenerateTempUserToken2([System.Web.Http.FromBody] TempUserTokenReq req)
         {
             var bllAuth = new BllAuth();
-            var tokenbytes64 = Convert.FromBase64String(req.tokenContentBase64);
-            var tokenContent = System.Text.Encoding.UTF8.GetString(tokenbytes64);
-            var decryptedTokenContent = bllAuth.GetTempUATokenReqContent(tokenContent);
+                var decryptedTokenContent = bllAuth.GetTempUATokenReqContent(req.tokenContent);
             
             if (decryptedTokenContent == null)
             {
@@ -172,11 +170,16 @@ namespace MPWeb.Controllers
                 // TODO throw error
             }
 
-            return Content("<html><head></head><body><script type=\"text/javascript\"> "
+   
+           var ret = Content("<html><head></head><body><script type=\"text/javascript\"> "
                 + "localStorage.setItem(\"" + AUTH_TOKEN_CLIENT_LOCAL_STORAGE_KEY + "\",\" " + token + "\"); "
                 + "window.location.replace(\"" + m_authTokenRedirectReplaceUrl + "\"); "
-                +"</script>"
+                + "</script>"
                 + "</body><html>", "text/html", System.Text.Encoding.UTF8);
+            
+   //         Console.WriteLine(ret);
+            return ret;
+
         }
 
         [Route("Auth/Logout")]
