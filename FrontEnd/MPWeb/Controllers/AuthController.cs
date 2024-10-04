@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using MPWeb.Code;
 using System.Configuration;
 using MPWeb.Logic.BLL;
+using MPWeb.Logic.Helpers;
+
 
 namespace MPWeb.Controllers
 {
@@ -133,6 +135,32 @@ namespace MPWeb.Controllers
             }), "application/json");
         }
 
+        public class TempUserTokenReq
+        {
+            public string tokenContent { get; set; }
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("Auth/GenerateTempUserToken2")]
+        public ActionResult GenerateTempUserToken2([System.Web.Http.FromBody] TempUserTokenReq req)
+        {
+            var bllAuth = new BllAuth();
+                var decryptedTokenContent = bllAuth.GetTempUATokenReqContent(req.tokenContent);
+            
+            if (decryptedTokenContent == null)
+            {
+                // TODO throw error
+            }
+
+            var tuToken = bllAuth.GetTemporaryUserAccessToken(decryptedTokenContent);
+
+            return Content(JsonConvert.SerializeObject(new
+            {
+                temporaryUserToken = tuToken
+            }), "application/json");
+        }
+
         [AllowAnonymous]
         [HttpGet]
         public ActionResult TokenLoginRedirect(string token)
@@ -142,11 +170,16 @@ namespace MPWeb.Controllers
                 // TODO throw error
             }
 
-            return Content("<html><head></head><body><script type=\"text/javascript\"> "
+   
+           var ret = Content("<html><head></head><body><script type=\"text/javascript\"> "
                 + "localStorage.setItem(\"" + AUTH_TOKEN_CLIENT_LOCAL_STORAGE_KEY + "\",\" " + token + "\"); "
                 + "window.location.replace(\"" + m_authTokenRedirectReplaceUrl + "\"); "
-                +"</script>"
+                + "</script>"
                 + "</body><html>", "text/html", System.Text.Encoding.UTF8);
+            
+   //         Console.WriteLine(ret);
+            return ret;
+
         }
 
         [Route("Auth/Logout")]
